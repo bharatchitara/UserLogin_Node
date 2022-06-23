@@ -1,12 +1,11 @@
+/* eslint-disable no-unused-vars */
 import jwt from "jsonwebtoken";
 //import cookieParser from "cookie-parser";
 
-import SessionClass from "../Dbfunctions/new_session.js";
 
 
 const config = process.env;
 
-let session_function = new SessionClass;
 
 const checkAccessToken = async (req,res,next) => {
   

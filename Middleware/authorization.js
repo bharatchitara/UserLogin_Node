@@ -1,7 +1,5 @@
+/* eslint-disable no-undef */
 import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
-import mysql from "mysql";
-import { response  } from "express";
 import { config } from "dotenv";
 
 import SessionClass from "../Dbfunctions/new_session.js";

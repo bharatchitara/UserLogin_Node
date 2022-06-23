@@ -1,7 +1,5 @@
 import jwt from "jsonwebtoken";
 import { config } from "dotenv"; 
-import { verifyToken } from "../Middleware/authorization.js";
-import cookieParser from "cookie-parser";
 
 config();
 export function home(req,res){

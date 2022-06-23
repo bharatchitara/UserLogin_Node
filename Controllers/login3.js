@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 ////...... system imports ////
 import jwt from "jsonwebtoken";
-import mysql from "mysql";
 import { config } from "dotenv";
 
 
@@ -42,6 +43,7 @@ export async function login(req,response) {                                     
       
         console.log("Connected to the MySQL server.");
     });
+    let message;
     let verify_password;                              
     response.status(200);
     var username = req.body.username;
@@ -55,6 +57,7 @@ export async function login(req,response) {                                     
     //length_users_object = Object.keys(users).length;
 
     var u_name= username;
+    
 
     //var query_result = {};
     var db_password = "";
@@ -96,7 +99,7 @@ export async function login(req,response) {                                     
 
     catch
     {
-        var message = [
+        message = [
             {
             "success": false,
             "message": "Login failed"
@@ -153,7 +156,7 @@ export async function login(req,response) {                                     
             console.log(inserttoken);
 
 
-            var message = [                                                                        //display message - for postman
+             message = [                                                                        //display message - for postman
             {
                 "success": true,
                 "message": "Login successfull."
@@ -198,6 +201,5 @@ export async function login(req,response) {                                     
 }
 
 
-//module.exports = login;
 
 

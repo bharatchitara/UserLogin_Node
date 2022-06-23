@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 // const { rejects } = require("assert");
 // var crypto = require("crypto");
 // const { builtinModules, Module } = require("module");
@@ -7,7 +9,7 @@
 
 
 import crypto from "crypto";
-import mysql from "mysql";
+
 
 import { database_connection } from "../Common_functions/dbconnection.js";
 
