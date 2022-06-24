@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { config } from "dotenv";
+// import { config } from "dotenv";
 
-config();
+// config();
 
 
 

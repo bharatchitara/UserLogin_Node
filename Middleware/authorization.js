@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import jwt from "jsonwebtoken";
-import { config } from "dotenv";
+// import { config } from "dotenv";
 // eslint-disable-next-line no-unused-vars
 import cookieParser from "cookie-parser";
 
@@ -11,7 +11,7 @@ import { database_connection } from "../Common_functions/dbconnection.js";
 let connection= database_connection;
 
 
-config();
+// config();
 
 let session_function = new SessionClass;
 
@@ -41,8 +41,10 @@ export const verifyToken =  async(req, res, next) => {
       catch(error){
         //console.log('User not exist');
         console.log(error);
-        let result = {success:false,msg:error};
-        return result;
+        let result = {success:false,msg:"No active session found.Please login first"};
+        res.status(403).send(result);
+
+        //return result;
       }
 
       //console.log("the data is " +fetchrefreshtoken);

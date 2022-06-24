@@ -2,7 +2,7 @@
 /* eslint-disable no-unused-vars */
 ////...... system imports ////
 import jwt from "jsonwebtoken";
-import { config } from "dotenv";
+//import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import DbOperation from "db_pkg";
 
@@ -31,7 +31,7 @@ let connection= database_connection;
 let cipher_function = new Cipher;
 let password_hashing_function = new PasswordHash;
 let session_function = new SessionClass;
-config();
+//config();
 
 export async function login(req,response) {                                                          //login function
 
@@ -59,6 +59,7 @@ export async function login(req,response) {                                     
 
     var u_name= username;
     
+    //console.log(process.env);
 
     //var query_result = {};
     var db_password = "";
@@ -86,15 +87,6 @@ export async function login(req,response) {                                     
     db_password = output.msg[0].password;
     console.log(output.msg);
 
-    // qu=  "SELECT * FROM users LIMIT 2";
-    // try{
-        
-    //     data = DbOperation.getData(qu);
-    //     console.log(data);
-    // }
-    // catch(error){
-    //     console.log(error);
-    // }
 
     if(output.msg.length != 0){
         flag_user_exist = 1;

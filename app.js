@@ -3,15 +3,15 @@ import { home } from "./Views/home.js";
 import { verifyToken } from "./Middleware/authorization.js";
 import { logout } from "./Controllers/logout.js";
 import DbOperation from "db_pkg";
-
+import { test_db } from "./Common_functions/newdbtest.js";
 
 
 import express from "express";
 import bodyParser from "body-parser";
-//import { config } from "dotenv";
+import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 
-//config();
+config();
 
 const PORT = process.env.API_PORT || 5000;
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
@@ -28,11 +28,12 @@ app.use(cookieParser());
     });
 
 
-
     app.post("/login",urlencodedParser,login);                                            //login page 
  
     app.get("/home",verifyToken,home);                                                    //home page - success after, JWT check pass
 
     app.post("/logout",urlencodedParser,logout);                                          //logout page
+
+    app.get("/getdata",urlencodedParser,test_db);
 
 
