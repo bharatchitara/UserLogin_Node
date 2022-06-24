@@ -1,17 +1,27 @@
 import DbOperation from "db_pkg";
-import "db_pkg";
+import { config } from "dotenv";
+// import { database_connection } from "../Common_functions/dbconnection.js";
 
-//let query  = "select id from user where id = 5";
+// database_connection;
 
+config({path:"../.env"});
+
+//config();
+
+console.log(process.env);
+
+
+export async function test_db(){
 let query = "SELECT * FROM users LIMIT 2";
 
 try{
     let selectData = await DbOperation.getData(query);
-
+    console.log(selectData);
 }
 catch(error){
     console.log(error);
 }
 
+}
 
-
+test_db();

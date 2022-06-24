@@ -3,6 +3,8 @@ import { config } from "dotenv";
 
 config();
 
+console.log(process.env.DB_HOST);
+
 export const database_connection = mysql.createConnection({
     host : process.env.DB_HOST,
     //port: process.env.MYSQL_PORT,

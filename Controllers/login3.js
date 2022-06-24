@@ -4,6 +4,7 @@
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
 import cookieParser from "cookie-parser";
+import DbOperation from "db_pkg";
 
 
 ////.....user defined imports ////
@@ -85,6 +86,16 @@ export async function login(req,response) {                                     
     db_password = output.msg[0].password;
     console.log(output.msg);
 
+    // qu=  "SELECT * FROM users LIMIT 2";
+    // try{
+        
+    //     data = DbOperation.getData(qu);
+    //     console.log(data);
+    // }
+    // catch(error){
+    //     console.log(error);
+    // }
+
     if(output.msg.length != 0){
         flag_user_exist = 1;
     }
@@ -116,6 +127,8 @@ export async function login(req,response) {                                     
         if(verify_password == true){
              var get_user_name = output.msg[0].name;                                                      // fetch username and name from db/local stored 
              var get_user_email =  output.msg[0].email;
+
+             console.log(process.env.DB_HOST);
             
              const token = jwt.sign(                                                             //jwt token creation and storing in user table
                 {user_data: get_user_name,get_user_email},                                      // payload
