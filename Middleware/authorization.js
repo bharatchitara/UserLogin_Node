@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
+// eslint-disable-next-line no-unused-vars
+import cookieParser from "cookie-parser";
 
 import SessionClass from "../Dbfunctions/new_session.js";
 
@@ -39,7 +41,7 @@ export const verifyToken =  async(req, res, next) => {
       catch(error){
         //console.log('User not exist');
         console.log(error);
-        result = {success:false,msg:error};
+        let result = {success:false,msg:error};
         return result;
       }
 
@@ -47,11 +49,11 @@ export const verifyToken =  async(req, res, next) => {
 
   
   if(!fetchsession){
-    return res.status(401).send("no active session found against the user");
+    res.status(401).send("no active session found against the user");
   }
 
   if(!fetchrefreshtoken){
-    return res.status(403).send("No refresh token found, Please login again.");
+    res.status(403).send("No refresh token found, Please login again.");
   }
 
   try {
@@ -62,21 +64,21 @@ export const verifyToken =  async(req, res, next) => {
 
   } catch (err) {
     console.log(err);
-    return res.status(401).send("Invalid Token, authorization check failed. Please login again");
+    res.status(401).send("Invalid Token, authorization check failed. Please login again");
   }
 
   const accesstoken = jwt.sign(                                                             //jwt token creation and storing in user table
                 {user_data:get_user_email},                                      // payload
                 process.env.TOKEN_KEY,                                                           
                 {
-                  expiresIn: "30m",
+                  expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
                 }
             );
   
-  console.log("access token @auth:"+accesstoken);
+  console.log("access token @auth: "+accesstoken);
   
   res.cookie("accesstoken",accesstoken);     
-
+                
 
   return next();
 };

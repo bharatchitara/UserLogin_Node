@@ -3,6 +3,7 @@
 ////...... system imports ////
 import jwt from "jsonwebtoken";
 import { config } from "dotenv";
+import cookieParser from "cookie-parser";
 
 
 ////.....user defined imports ////
@@ -54,7 +55,6 @@ export async function login(req,response) {                                     
     }
 
     var flag_user_exist = 0 ;
-    //length_users_object = Object.keys(users).length;
 
     var u_name= username;
     
@@ -89,7 +89,6 @@ export async function login(req,response) {                                     
         flag_user_exist = 1;
     }
 
-    //verify_password = hashing.verify_password(password,db_password);
     verify_password = password_hashing_function.verify_password(password,db_password);
 
     if(verify_password == false){
@@ -106,7 +105,6 @@ export async function login(req,response) {                                     
         }
         ];
 
-        response.clearCookie("JWT_token");
         response.status(401).json(message);
        // connection.end();
         return;
@@ -123,15 +121,15 @@ export async function login(req,response) {                                     
                 {user_data: get_user_name,get_user_email},                                      // payload
                 process.env.TOKEN_KEY,                                                           
                 {
-                  expiresIn: "30m",
+                  expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
                 }
             );
-
+            
             const refreshToken = jwt.sign(
                 {user_data: get_user_name,get_user_email}, 
                 process.env.REFRESH_TOKEN_KEY, 
                 { 
-                    expiresIn: "60d",
+                    expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
                 }
                 );
 
