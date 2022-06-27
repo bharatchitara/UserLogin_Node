@@ -18,15 +18,6 @@ import { database_connection } from "../Common_functions/dbconnection.js";
 let connection= database_connection;
 
 
-// var connection = mysql.createConnection({
-//     host : "reusable-modules.ckphk93ofay7.us-east-1.rds.amazonaws.com",
-//     user : "admin",
-//     password : "Rmodules$2022#",
-//     database : "micro_systems"
-
-// });
-
-
 
 let cipher_function = new Cipher;
 let password_hashing_function = new PasswordHash;
@@ -45,6 +36,7 @@ export async function login(req,response) {                                     
       
         console.log("Connected to the MySQL server.");
     });
+
     let message;
     let verify_password;                              
     response.status(200);
@@ -65,30 +57,41 @@ export async function login(req,response) {                                     
     var db_password = "";
 
     var output;
+
+    let getUserData;
     
     try{
 
-    const sql = `select * from users where email="${u_name}"`;
+
     
-    const result = await new Promise((resolve,reject) => {
-        connection.query(sql,(err,res)=> {
-            if(err){
-                output = { success: false };
-                reject(err.message);
-            }
-            else{
-                resolve(res);
-                output = {success : true, msg: res};
-            }
-        });
-    });
+
+    const sql = `select * from users where email="${u_name}"`;
+
+    getUserData = await DbOperation.getData(sql);
+
+   // console.log(this_data[0].password);
+
+   console.log("/////////////////////////////////////");
+    
+    // const result = await new Promise((resolve,reject) => {
+    //     connection.query(sql,(err,res)=> {
+    //         if(err){
+    //             output = { success: false };
+    //             reject(err.message);
+    //         }
+    //         else{
+    //             resolve(res);
+    //             output = {success : true, msg: res};
+    //         }
+    //     });
+    // });
 
 
-    db_password = output.msg[0].password;
-    console.log(output.msg);
+    db_password = getUserData[0].password;
+   // console.log(output.msg);
 
 
-    if(output.msg.length != 0){
+    if(getUserData.length != 0){
         flag_user_exist = 1;
     }
 
@@ -117,10 +120,10 @@ export async function login(req,response) {                                     
     if(flag_user_exist == 1 ){                                                                   // first check username is exist in local parameter/db
         
         if(verify_password == true){
-             var get_user_name = output.msg[0].name;                                                      // fetch username and name from db/local stored 
-             var get_user_email =  output.msg[0].email;
+             var get_user_name = getUserData[0].name;                                                      // fetch username and name from db/local stored 
+             var get_user_email =  getUserData[0].email;
 
-             console.log(process.env.DB_HOST);
+             //console.log(process.env.DB_HOST);
             
              const token = jwt.sign(                                                             //jwt token creation and storing in user table
                 {user_data: get_user_name,get_user_email},                                      // payload
@@ -139,8 +142,8 @@ export async function login(req,response) {                                     
                 );
 
 
-            console.log("from login ref"+refreshToken);
-            console.log("from login acc"+token);
+           // console.log("from login ref"+refreshToken);
+            //console.log("from login acc"+token);
             
             var payload= [                                                                       //response payload
                 {
@@ -195,7 +198,6 @@ export async function login(req,response) {                                     
             "message": "login failed", 
             }
         ];
-        response.clearCookie("JWT_token");
         response.status(401).json(message);
     }      
 

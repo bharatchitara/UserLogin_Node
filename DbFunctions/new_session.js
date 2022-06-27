@@ -10,10 +10,10 @@
 
 import crypto from "crypto";
 import DbOperation from "db_pkg";
+import { PassThrough } from "stream";
 
 import { database_connection } from "../Common_functions/dbconnection.js";
 let connection= database_connection;
-
 
 
 
@@ -27,38 +27,33 @@ export default class SessionClass{
 
         }
 
-async  getUserID(username) {                                                          //getuserfromdb function
+async getUserID(username) {                                                          //getuserfromdb function
     let result;
     const u_name = username;
-    const query = `select id from users where email="${u_name}"`;
-    //const query = `select id from users2 where email="${u_name}"`;
 
-    console.log(query);
-    
+    let get_user_id;
+    let user_id;
 
     try{
-        const response  = await new Promise((resolve,reject) =>{
-            connection.query(query,(err,results) =>{
-                if(err){
-                    result = {success:false, msg:err};
-                    reject(err.message);
-                }
-                else{
-                    resolve(results);
-                    console.log(results);
-                    if(results.length ==0)
-                        result = {success:false,msg:"user not found",values: results};
-                    else
-                        result =  {success:true,msg:"user fetched ",values: results};
-                }
-        });
-    });
+        //user_id = await this.getUserID(u_name).then(result => result.values[0].id);
+        const get_sql = `select id from users where email="${u_name}"`;
+        
+        get_user_id = await DbOperation.getData(get_sql);
+       // user_id = await getUserID(u_name);
+        
+        user_id = get_user_id[0].id;
 
-}
-catch(error){
-    console.log("error is getUserId",error);
-    result = {success:false,msg:error};
-}
+        console.log("the user is "+get_user_id[0].id);  
+        
+        result = user_id;
+        }
+
+    catch(error){
+        console.log(error);
+        console.log("User not exist");
+        result = {success:false,msg:error};
+        return result;
+    }
     return result;
 }
 
@@ -75,16 +70,23 @@ async  insertSession(username,refreshtoken){
 
     const generate_session_id = await generate_session_key().then(result);
     
+    let get_user_id;
     let user_id;
 
     try{
-        user_id = await this.getUserID(u_name).then(result => result.values[0].id);
+        //user_id = await this.getUserID(u_name).then(result => result.values[0].id);
+        const get_sql = `select id from users where email="${u_name}"`;
+        
+        get_user_id = await DbOperation.getData(get_sql);
        // user_id = await getUserID(u_name);
-      
-        console.log("the user is "+user_id);   
+        
+        user_id = get_user_id[0].id;
+
+        console.log("the user is "+get_user_id[0].id);   
         }
 
     catch(error){
+        console.log(error);
         console.log("User not exist");
         result = {success:false,msg:error};
         return result;
@@ -94,59 +96,86 @@ async  insertSession(username,refreshtoken){
     currentdate = new Date().toISOString().slice(0, 19).replace("T", " ");
     console.log(currentdate);
     console.log(ref_token);
-    const query  = `insert into sessions (session_id,user_id,login_time,token) values ('${generate_session_id}','${user_id}','${currentdate}','${ref_token}')`;
-//    const query  = `insert into sessions (session_id,user_id,login_time) values ('${generate_session_id}','${user_id}','${currentdate}')`;
-//     const query  = `insert into session (session_id,user_id,login_time) values ('${generate_session_id}','${user_id}','${currentdate}')`;
+
+    let insert_table = "sessions"; 
+    let flag_insert_success = 0 ;
+    
+    let fieldsData = [
+        "session_id",
+        "user_id",
+        "login_time",
+        "token"
+    ];
+    let valuesData = [
+            [
+            generate_session_id,
+            user_id,
+            currentdate,
+            ref_token                       
+            ]
+    ];
 
 
     try{
-        const response  = await new Promise((resolve,reject) =>{
-            connection.query(query,(err,results) =>{
-                if(err){
-                    result = {success:false, msg:err};
-                    reject(err.message);
-                }
-                else{
-                    resolve(results);
-                    if(results.length ==0)
-                        result = {success:false,msg:"session not inserted",values: results};
-                    else
+        await DbOperation.insertData("sessions",fieldsData,valuesData);
+        flag_insert_success = 1;
+        result =  {success:true,msg:"session inserted"};
+    }
+    catch(error){
+        console.log("esbsjb");
+        console.log(error);
+        result =  {success:false,msg:"session insertion failed"};
+    }
+
+    let get_max_id;
+    let get_max_id_from_session;
+    let returned_max_user_id;
+
+    try{
+        get_max_id = `select max(id) as maxid from sessions where user_id = "${user_id}"`;
+        
+        get_max_id_from_session = await DbOperation.getData(get_max_id);
+     
+        returned_max_user_id = get_max_id_from_session[0].maxid;
+ 
+    }
+
+    catch(error){
+        console.log("error in fetching max id"+error);
+    }
+
+    let updateData = 
+        {   
+        "logout_time": currentdate                           
+        };
+    
+    let condData = 
+        {   
+            "user_id": user_id,
+            "id": returned_max_user_id-1
+        };
 
 
-                     //// ending any previous session
-                    try{
-                        const updateprevioussession = this.updateSessiondataFromDb(username,connection,1);
-                 
-                       let msg = {
-                         success: true,
-                         message:"previous session ended."
-                 
-                        };
-                 
-                     }
-                     catch(error){
-                         console.log("previous session not ended.");
-                         console.log(error);
-                        let msg = {
-                             success: false,
-                             message:"previous session not ended."
-                 
-                         };
-                 
-                     }
-                    ////
 
-                        result =  {success:true,msg:"session inserted",values: results};
-                }
-        });
-    });
+    if(flag_insert_success == 1){
+        try{
+            await DbOperation.updateData("sessions",updateData,condData);
+            result = {
+                success: true,
+                message:"previous session ended."
+               };
+        }
+        catch(error){
+            console.log("updating error"+error);
+            result = {
+                success: false,
+                message:"previous session update failed."
+               };
+        }
 
-} 
+    }
 
-catch(error){
-    console.log("session table insertion failed",error);
-    result = {success:false,msg:error};
-}
+
        console.log(result);
        return result;
 }
@@ -226,7 +255,7 @@ async  updateSessiondataFromDb(username,db_connection,to_update_previous_session
 
     try{
         //console.log(u_name);
-        user_id = await this.getUserID(u_name).then(result => result.values[0].id);
+        user_id = await this.getUserID(u_name);
         console.log("the user is "+user_id);   
         }
 
@@ -280,37 +309,30 @@ catch(error){
 }
 
 
-async  fetchSessiondata(username,db_connection){
+async  fetchSessiondata(username){
 
     let result;
-    connection = db_connection;
+   // connection = db_connection;
+
+    let get_session_data;
  
     const query = `
     select session_id, token from sessions where id = (select max(id) from sessions) and logout_time is null;`;
 
         try{
-        const response  = await new Promise((resolve,reject) =>{
-        connection.query(query,(err,results) =>{
-        if(err){
-          result = {success:false, msg:err};
-          reject(err.message);
+            
+            get_session_data = await DbOperation.getData(query);
+            
+            result =  {success:true,msg:"query passed",output:get_session_data};
         }
-        else{
-          resolve(results);
-          if(results.length ==0)
-              result = {success:false,msg:"query failed",values: results};
-          else
-              result =  {success:true,msg:"query passed",values: results};
-        }
-        });
-        });
-
-        } 
 
         catch(error){
-        console.log("session updation failed",error);
-        result = {success:false,msg:error};
+            console.log(error);
+            
+            result = {success:false,msg:"query failed",output:get_session_data};
         }
+
+
 
 
         return result;
@@ -332,4 +354,6 @@ async  fetchSessiondata(username,db_connection){
 
 
 
+// let classobj = new SessionClass;
 
+// console.log(classobj.insertSession("bharat@test.com","1234"));

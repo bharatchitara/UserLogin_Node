@@ -28,12 +28,17 @@ export const verifyToken =  async(req, res, next) => {
 
   const get_user_email = u_name;
 
+  let get_session_data;
+
   
       try{
         
+        get_session_data = await session_function.fetchSessiondata(u_name);
 
-        fetchrefreshtoken = await session_function.fetchSessiondata(u_name,connection).then(result => result.values[0].token);
-        fetchsession = await session_function.fetchSessiondata(u_name,connection).then(result => result.values[0].session_id);
+        //console.log(get_session_data.output[0].session_id);
+
+        fetchrefreshtoken = get_session_data.output[0].token;
+        fetchsession = get_session_data.output[0].session_id;
 
        
         }
