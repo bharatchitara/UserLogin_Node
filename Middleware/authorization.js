@@ -7,9 +7,6 @@ import cookieParser from "cookie-parser";
 import SessionClass from "../Dbfunctions/new_session.js";
 
 
-import { database_connection } from "../Common_functions/dbconnection.js";
-let connection= database_connection;
-
 
 // config();
 

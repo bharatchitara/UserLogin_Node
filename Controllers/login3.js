@@ -1,8 +1,6 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 ////...... system imports ////
 import jwt from "jsonwebtoken";
-//import { config } from "dotenv";
 import cookieParser from "cookie-parser";
 import DbOperation from "db_pkg";
 
@@ -14,93 +12,56 @@ import PasswordHash from "../Common_functions/password_hash.js";
 /////
 
 
-import { database_connection } from "../Common_functions/dbconnection.js";
-let connection= database_connection;
-
-
-
 let cipher_function = new Cipher;
 let password_hashing_function = new PasswordHash;
 let session_function = new SessionClass;
-//config();
+
 
 export async function login(req,response) {                                                          //login function
 
-    //..............check connection 
-    connection.connect(function(err) {    
-        if (err) {
-          //return console.error('error: ' + err.message);
-          response.status(500).json("DB connection failed");
-          
-        }
-      
-        console.log("Connected to the MySQL server.");
-    });
-
+    
     let message;
     let verify_password;                              
     response.status(200);
-    var username = req.body.username;
-    var password = req.body.password;
+    let username = req.body.username;
+    let password = req.body.password;
 
     if(!(username && password)){                                                           //check for username and password both are provided
         response.status(500).send("Please enter username and password");
     }
 
-    var flag_user_exist = 0 ;
+    let flag_user_exist = 0 ;
 
-    var u_name= username;
+    let u_name= username;
     
     //console.log(process.env);
 
-    //var query_result = {};
-    var db_password = "";
+    //let query_result = {};
+    let db_password = "";
 
-    var output;
+    let output;
 
     let getUserData;
     
     try{
 
+        const sql = `select * from users where email="${u_name}"`;
 
-    
+        getUserData = await DbOperation.getData(sql);
 
-    const sql = `select * from users where email="${u_name}"`;
+        db_password = getUserData[0].password;
 
-    getUserData = await DbOperation.getData(sql);
+        if(getUserData.length != 0){
+            flag_user_exist = 1;
+        }
 
-   // console.log(this_data[0].password);
+        verify_password = password_hashing_function.verify_password(password,db_password);
 
-   console.log("/////////////////////////////////////");
-    
-    // const result = await new Promise((resolve,reject) => {
-    //     connection.query(sql,(err,res)=> {
-    //         if(err){
-    //             output = { success: false };
-    //             reject(err.message);
-    //         }
-    //         else{
-    //             resolve(res);
-    //             output = {success : true, msg: res};
-    //         }
-    //     });
-    // });
-
-
-    db_password = getUserData[0].password;
-   // console.log(output.msg);
-
-
-    if(getUserData.length != 0){
-        flag_user_exist = 1;
+        if(verify_password == false){
+            // eslint-disable-next-line no-undef
+            throw err;
+        }
     }
-
-    verify_password = password_hashing_function.verify_password(password,db_password);
-
-    if(verify_password == false){
-        throw err;
-    }
-}
 
     catch
     {
@@ -120,12 +81,11 @@ export async function login(req,response) {                                     
     if(flag_user_exist == 1 ){                                                                   // first check username is exist in local parameter/db
         
         if(verify_password == true){
-             var get_user_name = getUserData[0].name;                                                      // fetch username and name from db/local stored 
-             var get_user_email =  getUserData[0].email;
+            let get_user_name = getUserData[0].name;                                                      // fetch username and name from db/local stored 
+            let get_user_email =  getUserData[0].email;
 
-             //console.log(process.env.DB_HOST);
             
-             const token = jwt.sign(                                                             //jwt token creation and storing in user table
+            const token = jwt.sign(                                                             //jwt token creation and storing in user table
                 {user_data: get_user_name,get_user_email},                                      // payload
                 process.env.TOKEN_KEY,                                                           
                 {
@@ -141,11 +101,8 @@ export async function login(req,response) {                                     
                 }
                 );
 
-
-           // console.log("from login ref"+refreshToken);
-            //console.log("from login acc"+token);
             
-            var payload= [                                                                       //response payload
+            let payload= [                                                                       //response payload
                 {
                 "name":get_user_name, 
                 "email":get_user_email,
@@ -162,19 +119,19 @@ export async function login(req,response) {                                     
             console.log(inserttoken);
 
 
-             message = [                                                                        //display message - for postman
+            message = [                                                                        //display message - for postman
             {
                 "success": true,
                 "message": "Login successfull."
             }
         ];
 
-        //var encrypted_msg = encryption_script.encryption_f(JSON.stringify(payload));               //encrypting the payload @server, needs to be decrypt @ client side.
-        var encrypted_msg = cipher_function.encryption_f(JSON.stringify(payload));
-        
-        console.log(encrypted_msg);
-        
-        response.status(200).json(message);     
+            //let encrypted_msg = encryption_script.encryption_f(JSON.stringify(payload));               //encrypting the payload @server, needs to be decrypt @ client side.
+            let encrypted_msg = cipher_function.encryption_f(JSON.stringify(payload));
+            
+            console.log(encrypted_msg);
+            
+            response.status(200).json(message);     
             
         }
         else{

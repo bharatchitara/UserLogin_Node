@@ -9,7 +9,7 @@ reuseable node based componenent for user login provides extensive securty check
 Technologies used: 
 
 1. backend  - node.js (ES6 compatible).
-2. frontend  - current POSTMAN (later can be integrate with any front end tech.)
+2. frontend  - currently POSTMAN (later can be integrate with any front end tech.)
 3. db - mysql
 
 # dependencies:

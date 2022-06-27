@@ -1,9 +1,4 @@
-// const nacl = require('tweetnacl');
-// nacl.util = require('tweetnacl-util');
-
 import nacl from "tweetnacl";
-//import { util  from "tweetnacl-util";
-//import nacl.util from "tweetnacl-util";
 import util from "tweetnacl-util";
 
 
@@ -44,7 +39,7 @@ export default class Cipher{
 
 
 
- decryption_f(message){
+decryption_f(message){
     //Getting Viktoria's shared key
     const receiver_shared_key = nacl.box.before(sender.publicKey,receiver.secretKey);
 
@@ -61,8 +56,6 @@ export default class Cipher{
 //decrypted_msg = decryption_f(encrpted_msg);
 //console.log(decrypted_msg);
 
-//module.exports.encryption_f = encryption_f;
-//module.exports.decryption_f = decryption_f;
 
 
 

@@ -1,19 +1,10 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
-// const { rejects } = require("assert");
-// var crypto = require("crypto");
-// const { builtinModules, Module } = require("module");
-// const mysql = require("mysql");
-// const { resolve } = require("path");
-// require("dotenv").config();
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-lets */
 
 
 import crypto from "crypto";
 import DbOperation from "db_pkg";
-import { PassThrough } from "stream";
-
-import { database_connection } from "../Common_functions/dbconnection.js";
-let connection= database_connection;
 
 
 
@@ -23,9 +14,9 @@ const generate_session_key = async function(){
 
 
 export default class SessionClass{
-        constructor(){
+    constructor(){
 
-        }
+    }
 
 async getUserID(username) {                                                          //getuserfromdb function
     let result;
@@ -92,7 +83,7 @@ async  insertSession(username,refreshtoken){
         return result;
     }
 
-    var currentdate;
+    let currentdate;
     currentdate = new Date().toISOString().slice(0, 19).replace("T", " ");
     console.log(currentdate);
     console.log(ref_token);
@@ -249,7 +240,7 @@ async  updateSessiondataFromDb(username,db_connection,to_update_previous_session
     
     let user_id;
 
-    var currentdate;
+    let currentdate;
     currentdate = new Date().toISOString().slice(0, 19).replace("T", " ");
     console.log(currentdate);
 

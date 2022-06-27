@@ -1,8 +1,5 @@
 import SessionClass from "../Dbfunctions/new_session.js";
 
-import { database_connection } from "../Common_functions/dbconnection.js";
-let connection= database_connection;
-
 import DbOperation from "db_pkg";
 
 let session_function = new SessionClass;
@@ -10,7 +7,7 @@ let session_function = new SessionClass;
 
 export async function logout(req,response) {                                                          //logout
 
-    var username = req.body.username;
+    let username = req.body.username;
    
     let result;
 
@@ -18,7 +15,7 @@ export async function logout(req,response) {                                    
 
     let user_id = await session_function.getUserID(u_name);
 
-    var currentdate = new Date().toISOString().slice(0, 19).replace("T", " ");
+    let currentdate = new Date().toISOString().slice(0, 19).replace("T", " ");
    
 
     let get_max_id;
