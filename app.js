@@ -1,9 +1,5 @@
-import { login } from "./Controllers/login3.js";
-import { home } from "./Views/home.js";
-import { verifyToken } from "./Middleware/authorization.js";
-import { logout } from "./Controllers/logout.js";
-import DbOperation from "db_pkg";
-import { test_db } from "./Common_functions/newdbtest.js";
+import { userroutes } from "./Routes/Userloginroutes.js";
+
 
 
 import express from "express";
@@ -28,12 +24,15 @@ app.use(cookieParser());
     });
 
 
-    app.post("/login",urlencodedParser,login);                                            //login page 
+    app.use("/api/userlogin", userroutes);
+
+
+    // app.post("/login",urlencodedParser,login);                                            //login page 
  
-    app.get("/home",verifyToken,home);                                                    //home page - success after, JWT check pass
+    // app.get("/home",verifyToken,home);                                                    //home page - success after, JWT check pass
 
-    app.post("/logout",urlencodedParser,logout);                                          //logout page
+    // app.post("/logout",urlencodedParser,logout);                                          //logout page
 
-    app.get("/getdata",urlencodedParser,test_db);
+    // app.get("/getdata",urlencodedParser,test_db);
 
 
