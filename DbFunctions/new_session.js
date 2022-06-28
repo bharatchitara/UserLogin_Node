@@ -25,11 +25,13 @@ async getUserID(username) {                                                     
     let get_user_id;
     let user_id;
 
+    let fetch_values = [u_name];
+
     try{
         //user_id = await this.getUserID(u_name).then(result => result.values[0].id);
-        const get_sql = `select id from users where email="${u_name}"`;
+        const get_sql = "select id from users where email=?";
         
-        get_user_id = await DbOperation.getData(get_sql);
+        get_user_id = await DbOperation.execCustomQuery(get_sql,fetch_values);
        // user_id = await getUserID(u_name);
         
         user_id = get_user_id[0].id;
@@ -63,12 +65,13 @@ async  insertSession(username,refreshtoken){
     
     let get_user_id;
     let user_id;
+    let fetch_condition = [u_name];
 
     try{
         //user_id = await this.getUserID(u_name).then(result => result.values[0].id);
-        const get_sql = `select id from users where email="${u_name}"`;
+        const get_sql = "select id from users where email=?";
         
-        get_user_id = await DbOperation.getData(get_sql);
+        get_user_id = await DbOperation.execCustomQuery(get_sql,fetch_condition);
        // user_id = await getUserID(u_name);
         
         user_id = get_user_id[0].id;
@@ -122,10 +125,12 @@ async  insertSession(username,refreshtoken){
     let get_max_id_from_session;
     let returned_max_user_id;
 
+    let fetch_condition1 = [user_id];
+
     try{
-        get_max_id = `select max(id) as maxid from sessions where user_id = "${user_id}"`;
+        get_max_id = "select max(id) as maxid from sessions where user_id = ?";
         
-        get_max_id_from_session = await DbOperation.getData(get_max_id);
+        get_max_id_from_session = await DbOperation.execCustomQuery(get_max_id,fetch_condition1);
      
         returned_max_user_id = get_max_id_from_session[0].maxid;
  
@@ -306,13 +311,15 @@ async  fetchSessiondata(username){
    // connection = db_connection;
 
     let get_session_data;
+
+    let fetch_condition2= [];
  
     const query = `
     select session_id, token from sessions where id = (select max(id) from sessions) and logout_time is null;`;
 
         try{
             
-            get_session_data = await DbOperation.getData(query);
+            get_session_data = await DbOperation.execCustomQuery(query,fetch_condition2);
             
             result =  {success:true,msg:"query passed",output:get_session_data};
         }

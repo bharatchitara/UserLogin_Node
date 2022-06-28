@@ -22,10 +22,12 @@ export async function logout(req,response) {                                    
     let get_max_id_from_session;
     let returned_max_user_id;
 
+    let fetch_condition  = [user_id];
+
     try{
-        get_max_id = `select max(id) as maxid from sessions where user_id = "${user_id}"`;
+        get_max_id = "select max(id) as maxid from sessions where user_id = ?";
         
-        get_max_id_from_session = await DbOperation.getData(get_max_id);
+        get_max_id_from_session = await DbOperation.execCustomQuery(get_max_id,fetch_condition);
      
         returned_max_user_id = get_max_id_from_session[0].maxid;
  

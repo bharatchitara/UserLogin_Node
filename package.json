@@ -8,7 +8,7 @@
   "dependencies": {
     "body-parser": "^1.20.0",
     "cookie-parser": "^1.4.6",
-    "db_pkg": "^4.3.0",
+    "db_pkg": "^4.8.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "jsonwebtoken": "^8.5.1",

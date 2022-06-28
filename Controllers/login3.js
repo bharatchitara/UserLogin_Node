@@ -45,11 +45,15 @@ export async function login(req,response) {                                     
     
     try{
 
-        const sql = `select * from users where email="${u_name}"`;
+        let fetch_values = [u_name];
 
-        getUserData = await DbOperation.getData(sql);
+        const sql = "select * from users where email= ?";
+
+        getUserData = await DbOperation.execCustomQuery(sql,fetch_values);
 
         db_password = getUserData[0].password;
+
+        console.log(db_password);
 
         if(getUserData.length != 0){
             flag_user_exist = 1;

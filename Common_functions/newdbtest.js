@@ -4,10 +4,16 @@ import DbOperation from "db_pkg";
 
 
 export async function test_db(req,res){
-    let query = "SELECT * FROM users LIMIT 2";
+
+    //let criteria = "id = ?";
+
+    let values = [5];
+
+    // eslint-disable-next-line quotes
+    let query = `SELECT * FROM users where id = ?`;
 
     try{
-        let selectData = await DbOperation.getData(query);
+        let selectData = await DbOperation.execCustomQuery(query ,values);
         console.log(selectData);
 
         res.send(selectData);
